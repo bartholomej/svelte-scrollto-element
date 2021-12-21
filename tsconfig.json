@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "lib": ["dom", "es2017"],
+    "moduleResolution": "Node",
+    "baseUrl": "./src",
+    "esModuleInterop": true,
+    "module": "esnext",
+    "strictNullChecks": false,
+    "sourceMap": false,
+    "outDir": "./dist",
+    "strict": true,
+    "declaration": true,
+    "pretty": true,
+    "skipLibCheck": true,    
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true
+  },
+  "include": ["src", "index.ts"],
+  "exclude": ["dist/**/*", "*/tests/**/*"]
+}

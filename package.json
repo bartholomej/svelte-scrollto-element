@@ -8,11 +8,17 @@
     "animate",
     "scroll-to-element"
   ],
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "repository": "https://github.com/langbamit/svelte-scrollto",
   "author": "langbamit <langbamit@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
-    "svelte": "3.x"
+    "svelte": "3"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.4"
   }
 }

@@ -1,14 +1,14 @@
 export default {
-  $(selector) {
+  $(selector: any) {
     if (typeof selector === "string") {
       return document.querySelector(selector);
     }
     return selector;
   },
-  extend(...args) {
-    return Object.assign(...args);
+  extend(...args: any) {
+    return Object.assign({}, ...args);
   },
-  cumulativeOffset(element) {
+  cumulativeOffset(element: HTMLElement | any) {
     let top = 0;
     let left = 0;
 
@@ -23,10 +23,10 @@ export default {
       left: left
     };
   },
-  directScroll(element) {
+  directScroll(element: HTMLElement | any) {
     return element && element !== document && element !== document.body;
   },
-  scrollTop(element, value) {
+  scrollTop(element: HTMLElement | any, value?: number) {
     let inSetter = value !== undefined;
     if (this.directScroll(element)) {
       return inSetter ? (element.scrollTop = value) : element.scrollTop;
@@ -34,12 +34,12 @@ export default {
       return inSetter
         ? (document.documentElement.scrollTop = document.body.scrollTop = value)
         : window.pageYOffset ||
-            document.documentElement.scrollTop ||
-            document.body.scrollTop ||
-            0;
+        document.documentElement.scrollTop ||
+        document.body.scrollTop ||
+        0;
     }
   },
-  scrollLeft(element, value) {
+  scrollLeft(element: HTMLElement, value?: number) {
     let inSetter = value !== undefined;
     if (this.directScroll(element)) {
       return inSetter ? (element.scrollLeft = value) : element.scrollLeft;
@@ -47,9 +47,9 @@ export default {
       return inSetter
         ? (document.documentElement.scrollLeft = document.body.scrollLeft = value)
         : window.pageXOffset ||
-            document.documentElement.scrollLeft ||
-            document.body.scrollLeft ||
-            0;
+        document.documentElement.scrollLeft ||
+        document.body.scrollLeft ||
+        0;
     }
   }
 };
