@@ -1,7 +1,7 @@
 import { ScrollToOptions } from './global.interface';
 import { cubicInOut } from 'svelte/easing';
 import { noop, loop, now } from 'svelte/internal';
-import _ from './helper';
+import { $, cumulativeOffset, extend, scrollLeft, scrollTop } from './helper';
 
 const defaultOptions = {
   container: 'body',
@@ -16,7 +16,7 @@ const defaultOptions = {
   scrollY: true
 };
 
-const _scrollTo = (options: ScrollToOptions) => {
+const scrollToInternal = (options: ScrollToOptions) => {
   let {
     offset,
     duration,
@@ -37,30 +37,30 @@ const _scrollTo = (options: ScrollToOptions) => {
     offset = offset() as Function;
   }
 
-  var cumulativeOffsetContainer = _.cumulativeOffset(container);
-  var cumulativeOffsetTarget = element
-    ? _.cumulativeOffset(element)
+  const cumulativeOffsetContainer = cumulativeOffset(container);
+  const cumulativeOffsetTarget = element
+    ? cumulativeOffset(element)
     : { top: y, left: x };
 
-  var initialX = _.scrollLeft(container);
-  var initialY = _.scrollTop(container);
+  const initialX = scrollLeft(container);
+  const initialY = scrollTop(container);
 
-  var targetX =
+  const targetX =
     cumulativeOffsetTarget.left - cumulativeOffsetContainer.left + (offset as number);
-  var targetY =
+  const targetY =
     cumulativeOffsetTarget.top - cumulativeOffsetContainer.top + (offset as number);
 
-  var diffX = targetX - initialX;
-  var diffY = targetY - initialY;
+  const diffX = targetX - initialX;
+  const diffY = targetY - initialY;
 
   let scrolling = true;
   let started = false;
-  let start_time = now() + delay;
-  let end_time = start_time + duration;
+  let startTime = now() + delay;
+  let endTime = startTime + duration;
 
   function scrollToTopLeft(element: HTMLElement, top: number, left: number) {
-    if (scrollX) _.scrollLeft(element, left);
-    if (scrollY) _.scrollTop(element, top);
+    if (scrollX) scrollLeft(element, left);
+    if (scrollY) scrollTop(element, top);
   }
 
   function start(delayStart: number | boolean) {
@@ -83,11 +83,11 @@ const _scrollTo = (options: ScrollToOptions) => {
   }
 
   loop(now => {
-    if (!started && now >= start_time) {
+    if (!started && now >= startTime) {
       start(false)
     }
 
-    if (started && now >= end_time) {
+    if (started && now >= endTime) {
       tick(1);
       stop();
       onDone(element, { x, y });
@@ -98,7 +98,7 @@ const _scrollTo = (options: ScrollToOptions) => {
       return false;
     }
     if (started) {
-      const p = now - start_time;
+      const p = now - startTime;
       const t = 0 + 1 * easing(p / duration);
       tick(t);
     }
@@ -114,9 +114,9 @@ const _scrollTo = (options: ScrollToOptions) => {
 };
 
 const proceedOptions = (options: ScrollToOptions) => {
-  let opts = _.extend({}, defaultOptions, options);
-  opts.container = _.$(opts.container);
-  opts.element = _.$(opts.element);
+  let opts = extend({}, defaultOptions, options);
+  opts.container = $(opts.container);
+  opts.element = $(opts.element);
   return opts;
 };
 
@@ -142,18 +142,18 @@ const scrollContainerHeight = (containerElement: HTMLElement | any) => {
 };
 
 export const setGlobalOptions = (options: ScrollToOptions) => {
-  _.extend(defaultOptions, options || {});
+  extend(defaultOptions, options || {});
 };
 
 export const scrollTo = (options: ScrollToOptions) => {
-  return _scrollTo(proceedOptions(options));
+  return scrollToInternal(proceedOptions(options));
 };
 
 export const scrollToBottom = (options: ScrollToOptions) => {
   options = proceedOptions(options);
 
-  return _scrollTo(
-    _.extend(options, {
+  return scrollToInternal(
+    extend(options, {
       element: null,
       y: scrollContainerHeight(options.container)
     })
@@ -163,8 +163,8 @@ export const scrollToBottom = (options: ScrollToOptions) => {
 export const scrollToTop = (options: ScrollToOptions) => {
   options = proceedOptions(options);
 
-  return _scrollTo(
-    _.extend(options, {
+  return scrollToInternal(
+    extend(options, {
       element: null,
       y: 0
     })
