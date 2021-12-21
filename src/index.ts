@@ -38,17 +38,13 @@ const scrollToInternal = (options: ScrollToOptions) => {
   }
 
   const cumulativeOffsetContainer = cumulativeOffset(container);
-  const cumulativeOffsetTarget = element
-    ? cumulativeOffset(element)
-    : { top: y, left: x };
+  const cumulativeOffsetTarget = element ? cumulativeOffset(element) : { top: y, left: x };
 
   const initialX = scrollLeft(container);
   const initialY = scrollTop(container);
 
-  const targetX =
-    cumulativeOffsetTarget.left - cumulativeOffsetContainer.left + (offset as number);
-  const targetY =
-    cumulativeOffsetTarget.top - cumulativeOffsetContainer.top + (offset as number);
+  const targetX = cumulativeOffsetTarget.left - cumulativeOffsetContainer.left + (offset as number);
+  const targetY = cumulativeOffsetTarget.top - cumulativeOffsetContainer.top + (offset as number);
 
   const diffX = targetX - initialX;
   const diffY = targetY - initialY;
@@ -71,20 +67,16 @@ const scrollToInternal = (options: ScrollToOptions) => {
   }
 
   function tick(progress: number) {
-    scrollToTopLeft(
-      container,
-      initialY + diffY * progress,
-      initialX + diffX * progress
-    );
+    scrollToTopLeft(container, initialY + diffY * progress, initialX + diffX * progress);
   }
 
   function stop() {
     scrolling = false;
   }
 
-  loop(now => {
+  loop((now) => {
     if (!started && now >= startTime) {
-      start(false)
+      start(false);
     }
 
     if (started && now >= endTime) {
@@ -121,11 +113,7 @@ const proceedOptions = (options: ScrollToOptions) => {
 };
 
 const scrollContainerHeight = (containerElement: HTMLElement | any) => {
-  if (
-    containerElement &&
-    containerElement !== document &&
-    containerElement !== document.body
-  ) {
+  if (containerElement && containerElement !== document && containerElement !== document.body) {
     return containerElement.scrollHeight - containerElement.offsetHeight;
   } else {
     let body = document.body;
@@ -176,9 +164,7 @@ export const makeScrollToAction = (scrollToFunc: any) => {
     let current = options;
     const handle = (e: any) => {
       e.preventDefault();
-      scrollToFunc(
-        typeof current === 'string' ? { element: current } : current
-      );
+      scrollToFunc(typeof current === 'string' ? { element: current } : current);
     };
     node.addEventListener('click', handle);
     node.addEventListener('touchstart', handle);
