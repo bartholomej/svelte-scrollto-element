@@ -1,6 +1,6 @@
-import { ScrollToOptions } from './global.interface';
 import { cubicInOut } from 'svelte/easing';
-import { noop, loop, now } from 'svelte/internal';
+import { loop, noop, now } from 'svelte/internal';
+import { ScrollToOptions } from './global.interface';
 import { $, cumulativeOffset, extend, scrollLeft, scrollTop } from './helper';
 
 const defaultOptions = {
