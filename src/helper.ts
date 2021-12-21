@@ -5,9 +5,7 @@ export const $ = (selector: HTMLElement) => {
   return selector;
 };
 
-export const extend = (...args: any) => {
-  return Object.assign({}, ...args);
-};
+export const extend = (...args: any) => Object.assign({}, ...args);
 
 export const cumulativeOffset = (element: HTMLElement | any) => {
   let top = 0;
@@ -20,33 +18,30 @@ export const cumulativeOffset = (element: HTMLElement | any) => {
   } while (element);
 
   return {
-    top: top,
-    left: left
+    top,
+    left
   };
 };
 
-export const directScroll = (element: HTMLElement | any) => {
-  return element && element !== document && element !== document.body;
-};
+export const directScroll = (element: HTMLElement | any) =>
+  element && element !== document && element !== document.body;
 
 export const scrollTop = (element: HTMLElement | any, value?: number) => {
-  let inSetter = value !== undefined;
+  const inSetter = value !== undefined;
   if (directScroll(element)) {
     return inSetter ? (element.scrollTop = value) : element.scrollTop;
-  } else {
-    return inSetter
-      ? (document.documentElement.scrollTop = document.body.scrollTop = value)
-      : window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
   }
+  return inSetter
+    ? (document.documentElement.scrollTop = document.body.scrollTop = value)
+    : window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
 };
 
 export const scrollLeft = (element: HTMLElement, value?: number) => {
-  let inSetter = value !== undefined;
+  const inSetter = value !== undefined;
   if (directScroll(element)) {
     return inSetter ? (element.scrollLeft = value) : element.scrollLeft;
-  } else {
-    return inSetter
-      ? (document.documentElement.scrollLeft = document.body.scrollLeft = value)
-      : window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
   }
+  return inSetter
+    ? (document.documentElement.scrollLeft = document.body.scrollLeft = value)
+    : window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
 };

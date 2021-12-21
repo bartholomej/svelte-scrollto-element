@@ -5,7 +5,8 @@
   "scripts": {
     "start": "tsc -w",
     "build": "tsc",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "postbuild": "npm-prepare-dist -s postbuild"
   },
   "keywords": [
     "svelte",
@@ -13,7 +14,6 @@
     "animate",
     "scroll-to-element"
   ],
-  "main": "dist/index.js",
   "repository": "https://github.com/bartholomej/svelte-scrollto-element",
   "author": "Bartholomej <bart@bartweb.cz>",
   "license": "MIT",
@@ -27,6 +27,7 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.3",
     "husky": "^7.0.4",
+    "npm-prepare-dist": "^0.3.3",
     "prettier": "^2.5.1",
     "pretty-quick": "^3.1.2",
     "typescript": "^4.5.4"
