@@ -1,7 +1,7 @@
 import { cubicInOut } from 'svelte/easing';
 import { loop, noop, now } from 'svelte/internal';
 import { ScrollToOptions } from '../global.interface';
-import { $, cumulativeOffset, extend, scrollLeft, scrollTop } from '../helpers/helper';
+import { $, cumulativeOffset, extend, scrollLeft, scrollTop } from '../helpers/helper.js';
 
 const defaultOptions = {
   container: 'body',
@@ -134,7 +134,7 @@ export const setGlobalOptions = (options: ScrollToOptions) => {
 
 export const scrollTo = (options: ScrollToOptions) => scrollToInternal(proceedOptions(options));
 
-export const scrollToBottom = (options: ScrollToOptions) => {
+export const scrollToBottom = (options?: ScrollToOptions) => {
   options = proceedOptions(options);
 
   return scrollToInternal(
@@ -145,7 +145,7 @@ export const scrollToBottom = (options: ScrollToOptions) => {
   );
 };
 
-export const scrollToTop = (options: ScrollToOptions) => {
+export const scrollToTop = (options?: ScrollToOptions) => {
   options = proceedOptions(options);
 
   return scrollToInternal(

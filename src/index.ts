@@ -1,1 +1,8 @@
-export { scrollto, scrolltobottom, scrolltotop } from './services/service';
+export {
+  scrollto,
+  scrollTo,
+  scrolltobottom,
+  scrollToBottom,
+  scrolltotop,
+  scrollToTop
+} from './services/service.js';
