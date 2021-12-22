@@ -2,9 +2,9 @@
 
 > Animating vertical and horizontal scrolling (for Svelte)
 >
-> - TypeScript, JavaScript
+> - TypeScript / JavaScript
 > - Useful options
-> - Compatible with Svelte `adapter-static`
+> - Compatible with `SvelteKit`, `SSR` and `adapter-static`
 
 ## Install
 
@@ -15,19 +15,21 @@ npm install svelte-scrollto-element --save
 
 ## Usage
 
+### Using programmatically
+
 ```html
 <script>
-  import * as animateScroll from "svelte-scrollto-element";
+  import { animateScroll } from 'svelte-scrollto-element';
 </script>
 
 <a on:click={() => animateScroll.scrollToBottom()}> Scroll to bottom </a>
 <a on:click={() => animateScroll.scrollToTop()}> Scroll to top </a>
-<a on:click={() => animateScroll.scrollTo({element: 'scroll-to-element-selector'})}> Scroll to element </a>
-<a on:click={() => animateScroll.scrollTo({element: 'scroll-to-element-selector', offset: 200})}> Scroll to below element 200px </a>
-<a on:click={() => animateScroll.scrollTo({element: 'scroll-to-element-selector', duration: 2000})}> Scroll to element over 2000ms </a>
+<a on:click={() => animateScroll.scrollTo({element: '#my-anchor'})}> Scroll to element with id="my-anchor"  </a>
+<a on:click={() => animateScroll.scrollTo({element: '.my-element-class', offset: 200})}> Scroll to below element 200px </a>
+<a on:click={() => animateScroll.scrollTo({element: 'footer', duration: 2000})}> Scroll to footer element over 2000ms </a>
 ```
 
-Using as a action
+### Using as a action
 
 ```html
 <script>
@@ -57,17 +59,17 @@ Using as a action
 Override global options:
 
 ```typescript
-import * as animateScroll from "svelte-scrollto-element";
+import { animateScroll } from 'svelte-scrollto-element';
 
 animateScroll.setGlobalOptions({
   offset: 200,
   onStart: (element, offset) => {
     if (element) {
-      console.log("Start scrolling to element:", element);
+      console.log('Start scrolling to element:', element);
     } else if (offset) {
-      console.log("Start scrolling to page offset: (${offset.x}, ${offset.y})");
+      console.log('Start scrolling to page offset: (${offset.x}, ${offset.y})');
     }
-  },
+  }
 });
 ```
 
