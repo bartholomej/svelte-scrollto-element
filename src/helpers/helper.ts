@@ -1,3 +1,5 @@
+import { ScrollToOptions } from 'global.interface';
+
 export const $ = (selector: HTMLElement) => {
   if (typeof selector === 'string') {
     return document.querySelector(selector);
@@ -5,7 +7,7 @@ export const $ = (selector: HTMLElement) => {
   return selector;
 };
 
-export const extend = (...args: any) => Object.assign({}, ...args);
+export const extend = (...args: ScrollToOptions[]) => Object.assign({}, ...args);
 
 export const cumulativeOffset = (element: HTMLElement | any) => {
   let top = 0;

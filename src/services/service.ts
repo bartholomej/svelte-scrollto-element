@@ -1,6 +1,6 @@
 import { cubicInOut } from 'svelte/easing';
 import { loop, noop, now } from 'svelte/internal';
-import { ScrollToOptions } from '../global.interface';
+import { ScrollToOptions } from '../global.interface.js';
 import { $, cumulativeOffset, extend, scrollLeft, scrollTop } from '../helpers/helper.js';
 
 const defaultOptions = {
@@ -17,8 +17,7 @@ const defaultOptions = {
 };
 
 const scrollToInternal = (options: ScrollToOptions) => {
-  let {
-    offset,
+  const {
     duration,
     delay,
     easing,
@@ -32,6 +31,8 @@ const scrollToInternal = (options: ScrollToOptions) => {
     onAborting,
     element
   } = options;
+
+  let { offset } = options;
 
   if (typeof offset === 'function') {
     offset = offset() as Function;
@@ -112,9 +113,12 @@ const proceedOptions = (options: ScrollToOptions) => {
   return opts;
 };
 
-const scrollContainerHeight = (containerElement: HTMLElement | any) => {
+const scrollContainerHeight = (containerElement: HTMLElement | Document) => {
   if (containerElement && containerElement !== document && containerElement !== document.body) {
-    return containerElement.scrollHeight - containerElement.offsetHeight;
+    return (
+      (containerElement as HTMLElement).scrollHeight -
+      (containerElement as HTMLElement).offsetHeight
+    );
   }
   const { body } = document;
   const html = document.documentElement;
@@ -128,13 +132,13 @@ const scrollContainerHeight = (containerElement: HTMLElement | any) => {
   );
 };
 
-export const setGlobalOptions = (options: ScrollToOptions) => {
+const setGlobalOptions = (options: ScrollToOptions) => {
   extend(defaultOptions, options || {});
 };
 
-export const scrollTo = (options: ScrollToOptions) => scrollToInternal(proceedOptions(options));
+const scrollTo = (options: ScrollToOptions) => scrollToInternal(proceedOptions(options));
 
-export const scrollToBottom = (options?: ScrollToOptions) => {
+const scrollToBottom = (options?: ScrollToOptions) => {
   options = proceedOptions(options);
 
   return scrollToInternal(
@@ -145,7 +149,7 @@ export const scrollToBottom = (options?: ScrollToOptions) => {
   );
 };
 
-export const scrollToTop = (options?: ScrollToOptions) => {
+const scrollToTop = (options?: ScrollToOptions) => {
   options = proceedOptions(options);
 
   return scrollToInternal(
@@ -156,9 +160,9 @@ export const scrollToTop = (options?: ScrollToOptions) => {
   );
 };
 
-export const makeScrollToAction = (scrollToFunc: any) => (node: any, options: ScrollToOptions) => {
+const makeScrollToAction = (scrollToFunc: Function) => (node: Node, options: ScrollToOptions) => {
   let current = options;
-  const handle = (e: any) => {
+  const handle = (e: Event) => {
     e.preventDefault();
     scrollToFunc(typeof current === 'string' ? { element: current } : current);
   };
@@ -175,6 +179,10 @@ export const makeScrollToAction = (scrollToFunc: any) => (node: any, options: Sc
   };
 };
 
+// Actions
 export const scrollto = makeScrollToAction(scrollTo);
 export const scrolltotop = makeScrollToAction(scrollToTop);
 export const scrolltobottom = makeScrollToAction(scrollToBottom);
+
+// Methods
+export const animateScroll = { scrollTo, scrollToTop, scrollToBottom, setGlobalOptions };

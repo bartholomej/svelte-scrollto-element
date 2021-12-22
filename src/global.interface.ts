@@ -5,8 +5,8 @@ export interface ScrollToOptions {
   easing?: any;
   x?: number;
   y?: number;
-  scrollX?: number;
-  scrollY?: number;
+  scrollX?: boolean;
+  scrollY?: boolean;
   onStart?: any;
   onDone?: any;
   container?: any;
