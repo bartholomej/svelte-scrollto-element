@@ -1,15 +1,16 @@
-import { ScrollToOptions } from 'global.interface';
+import { ScrollToElementOptions, ScrollToElementPosition } from '../global.interface';
 
-export const $ = (selector: HTMLElement) => {
+export const $ = (selector: HTMLElement): HTMLElement => {
   if (typeof selector === 'string') {
     return document.querySelector(selector);
   }
   return selector;
 };
 
-export const extend = (...args: ScrollToOptions[]) => Object.assign({}, ...args);
+export const extend = (...args: ScrollToElementOptions[]): ScrollToElementOptions =>
+  Object.assign({}, ...args);
 
-export const cumulativeOffset = (element: HTMLElement | any) => {
+export const cumulativeOffset = (element: HTMLElement | any): ScrollToElementPosition => {
   let top = 0;
   let left = 0;
 
@@ -25,10 +26,10 @@ export const cumulativeOffset = (element: HTMLElement | any) => {
   };
 };
 
-export const directScroll = (element: HTMLElement | any) =>
+export const directScroll = (element: HTMLElement | any): boolean =>
   element && element !== document && element !== document.body;
 
-export const scrollTop = (element: HTMLElement | any, value?: number) => {
+export const scrollTop = (element: HTMLElement | any, value?: number): number => {
   const inSetter = value !== undefined;
   if (directScroll(element)) {
     return inSetter ? (element.scrollTop = value) : element.scrollTop;
@@ -38,7 +39,7 @@ export const scrollTop = (element: HTMLElement | any, value?: number) => {
     : window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
 };
 
-export const scrollLeft = (element: HTMLElement, value?: number) => {
+export const scrollLeft = (element: HTMLElement, value?: number): number => {
   const inSetter = value !== undefined;
   if (directScroll(element)) {
     return inSetter ? (element.scrollLeft = value) : element.scrollLeft;

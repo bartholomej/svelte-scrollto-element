@@ -1,4 +1,4 @@
-export interface ScrollToOptions {
+export interface ScrollToElementOptions {
   offset?: number | Function;
   duration?: number;
   delay?: number;
@@ -11,5 +11,10 @@ export interface ScrollToOptions {
   onDone?: any;
   container?: any;
   onAborting?: any;
-  element?: string | HTMLElement;
+  element?: HTMLElement;
+}
+
+export interface ScrollToElementPosition {
+  top: number;
+  left: number;
 }
