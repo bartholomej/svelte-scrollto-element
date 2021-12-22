@@ -33,7 +33,7 @@ npm install svelte-scrollto-element --save
 
 ```html
 <script>
-  import { scrollto } from "svelte-scrollto-element";
+  import { scrollto } from 'svelte-scrollto-element';
 </script>
 <!-- Parameter is element selector or options -->
 <a use:scrollto={'#scroll-element'}> Scroll to element </a>
