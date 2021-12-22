@@ -1053,10 +1053,10 @@ natural-compare@^1.4.0:
   resolved "https://registry.npmjs.org/natural-compare/-/natural-compare-1.4.0.tgz"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-npm-prepare-dist@^0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/npm-prepare-dist/-/npm-prepare-dist-0.3.3.tgz#bf67efc544299b828c9a73d19be35f62829cab0e"
-  integrity sha512-6d7hicKYcKQl/dqI0eZopTCos7PXrbFS4Na0dt2IFaXO9RzHQT1RPVZao9EPGnV9HTk/VxTT8EqsB1yhjLiDyg==
+npm-prepare-dist@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/npm-prepare-dist/-/npm-prepare-dist-0.4.0.tgz#3617bad65bb20221db50c6960c15bf3d800c435d"
+  integrity sha512-fTXpYuPKBj9pFiXrCdFz3kGR/+O0J8fWHCt+fVuoUNQq4gHUeAZvluOtYY4CKB2/aeqaY06wvJ0/hF3tAKqAqA==
   dependencies:
     minimist "^1.2.5"
 
@@ -1390,7 +1390,7 @@ supports-color@^7.1.0:
 
 svelte@3:
   version "3.44.3"
-  resolved "https://registry.npmjs.org/svelte/-/svelte-3.44.3.tgz"
+  resolved "https://registry.yarnpkg.com/svelte/-/svelte-3.44.3.tgz#795b1ced6ed3da44969099e5061b850c93c95e9a"
   integrity sha512-aGgrNCip5PQFNfq9e9tmm7EYxWLVHoFsEsmKrtOeRD8dmoGDdyTQ+21xd7qgFd8MNdKGSYvg7F9dr+Tc0yDymg==
 
 text-table@^0.2.0:
