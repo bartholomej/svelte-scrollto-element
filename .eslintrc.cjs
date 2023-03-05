@@ -11,6 +11,15 @@ module.exports = {
   },
   plugins: ['@typescript-eslint'],
   rules: {
-    '@typescript-eslint/explicit-function-return-type': 'error'
+    '@typescript-eslint/explicit-function-return-type': 'warn',
+    '@typescript-eslint/missing-trailing-comma': 'never',
+    'max-len': [
+      'off',
+      {
+        code: 140,
+        ignoreComments: true,
+        ignoreUrls: true
+      }
+    ]
   }
 };
