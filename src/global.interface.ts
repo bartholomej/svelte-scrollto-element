@@ -11,7 +11,7 @@ export interface ScrollToElementOptions {
   onDone?: any;
   container?: any;
   onAborting?: any;
-  element?: HTMLElement;
+  element?: HTMLElement | string;
 }
 
 export interface ScrollToElementPosition {

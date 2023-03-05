@@ -1,7 +1,7 @@
 import { cubicInOut } from 'svelte/easing';
 import { loop, noop, now } from 'svelte/internal';
 import { ScrollToElementOptions } from '../global.interface';
-import { $, cumulativeOffset, extend, scrollLeft, scrollTop } from '../helpers/helper.js';
+import { $, cumulativeOffset, extend, scrollLeft, scrollTop } from '../helpers/helper';
 
 const defaultOptions: ScrollToElementOptions = {
   container: 'body',
@@ -17,20 +17,7 @@ const defaultOptions: ScrollToElementOptions = {
 };
 
 const scrollToInternal = (options: ScrollToElementOptions): (() => void) => {
-  const {
-    duration,
-    delay,
-    easing,
-    x = 0,
-    y = 0,
-    scrollX,
-    scrollY,
-    onStart,
-    onDone,
-    container,
-    onAborting,
-    element
-  } = options;
+  const { duration, delay, easing, x = 0, y = 0, scrollX, scrollY, onStart, onDone, container, onAborting, element } = options;
 
   let { offset } = options;
 
@@ -55,9 +42,9 @@ const scrollToInternal = (options: ScrollToElementOptions): (() => void) => {
   const startTime = now() + delay;
   const endTime = startTime + duration;
 
-  function scrollToTopLeft(element: HTMLElement, top: number, left: number): void {
-    if (scrollX) scrollLeft(element, left);
-    if (scrollY) scrollTop(element, top);
+  function scrollToTopLeft(el: HTMLElement | string, top: number, left: number): void {
+    if (scrollX) scrollLeft(el, left);
+    if (scrollY) scrollTop(el, top);
   }
 
   function start(delayStart: number | boolean): void {
@@ -106,8 +93,8 @@ const scrollToInternal = (options: ScrollToElementOptions): (() => void) => {
   return stop;
 };
 
-const proceedOptions = (options: ScrollToElementOptions): ScrollToElementOptions => {
-  const opts = extend({}, defaultOptions, options);
+const proceedOptions = (options: ScrollToElementOptions | string): ScrollToElementOptions => {
+  const opts = extend({}, defaultOptions, options as ScrollToElementOptions);
   opts.container = $(opts.container);
   opts.element = $(opts.element);
   return opts;
@@ -115,35 +102,25 @@ const proceedOptions = (options: ScrollToElementOptions): ScrollToElementOptions
 
 const scrollContainerHeight = (containerElement: HTMLElement | Document): number => {
   if (containerElement && containerElement !== document && containerElement !== document.body) {
-    return (
-      (containerElement as HTMLElement).scrollHeight -
-      (containerElement as HTMLElement).offsetHeight
-    );
+    return (containerElement as HTMLElement).scrollHeight - (containerElement as HTMLElement).offsetHeight;
   }
   const { body } = document;
   const html = document.documentElement;
 
-  return Math.max(
-    body.scrollHeight,
-    body.offsetHeight,
-    html.clientHeight,
-    html.scrollHeight,
-    html.offsetHeight
-  );
+  return Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
 };
 
 const setGlobalOptions = (options: ScrollToElementOptions): void => {
   extend(defaultOptions, options || {});
 };
 
-const scrollTo = (options: ScrollToElementOptions): (() => void) =>
-  scrollToInternal(proceedOptions(options));
+const scrollTo = (options: ScrollToElementOptions): (() => void) => scrollToInternal(proceedOptions(options));
 
 const scrollToBottom = (options?: ScrollToElementOptions): (() => void) => {
-  options = proceedOptions(options);
+  const opts = proceedOptions(options);
 
   return scrollToInternal(
-    extend(options, {
+    extend(opts, {
       element: null,
       y: scrollContainerHeight(options.container)
     })
@@ -151,35 +128,35 @@ const scrollToBottom = (options?: ScrollToElementOptions): (() => void) => {
 };
 
 const scrollToTop = (options?: ScrollToElementOptions): (() => void) => {
-  options = proceedOptions(options);
+  const opts = proceedOptions(options);
 
   return scrollToInternal(
-    extend(options, {
+    extend(opts, {
       element: null,
       y: 0
     })
   );
 };
 
-const makeScrollToAction =
-  (scrollToFunc: Function) => (node: Node, options: ScrollToElementOptions) => {
-    let current = options;
-    const handle: EventListenerOrEventListenerObject = (e: Event) => {
-      e.preventDefault();
-      scrollToFunc(typeof current === 'string' ? { element: current } : current);
-    };
-    node.addEventListener('click', handle);
-    node.addEventListener('touchstart', handle);
-    return {
-      update(options: ScrollToElementOptions): void {
-        current = options;
-      },
-      destroy(): void {
-        node.removeEventListener('click', handle);
-        node.removeEventListener('touchstart', handle);
-      }
-    };
+const makeScrollToAction = (scrollToFunc: Function) => (node: Node, options: ScrollToElementOptions) => {
+  let current = options;
+  // eslint-disable-next-line no-undef
+  const handle: EventListenerOrEventListenerObject = (e: Event) => {
+    e.preventDefault();
+    scrollToFunc(typeof current === 'string' ? { element: current } : current);
   };
+  node.addEventListener('click', handle);
+  node.addEventListener('touchstart', handle);
+  return {
+    update(opts: ScrollToElementOptions): void {
+      current = opts;
+    },
+    destroy(): void {
+      node.removeEventListener('click', handle);
+      node.removeEventListener('touchstart', handle);
+    }
+  };
+};
 
 // Actions
 export const scrollto = makeScrollToAction(scrollTo);
@@ -187,4 +164,9 @@ export const scrolltotop = makeScrollToAction(scrollToTop);
 export const scrolltobottom = makeScrollToAction(scrollToBottom);
 
 // Methods
-export const animateScroll = { scrollTo, scrollToTop, scrollToBottom, setGlobalOptions };
+export const animateScroll = {
+  scrollTo,
+  scrollToTop,
+  scrollToBottom,
+  setGlobalOptions
+};
