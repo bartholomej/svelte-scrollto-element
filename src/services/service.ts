@@ -17,7 +17,7 @@ const defaultOptions: ScrollToElementOptions = {
 };
 
 const scrollToInternal = (options: ScrollToElementOptions): (() => void) => {
-  let {
+  const {
     duration,
     delay,
     easing,
@@ -29,27 +29,35 @@ const scrollToInternal = (options: ScrollToElementOptions): (() => void) => {
     onDone,
     container,
     onAborting,
-    element,
-    offset
+    element
   } = options;
 
-  offset = typeof offset === 'function' ? offset() : offset;
+  let { offset } = options;
 
-  const { top: containerTop, left: containerLeft } = cumulativeOffset(container);
-  const { top: targetTop, left: targetLeft } = element ? cumulativeOffset(element) : { top: y, left: x };
+  if (typeof offset === 'function') {
+    offset = offset() as Function;
+  }
 
-  const [initialX, initialY] = [scrollLeft(container), scrollTop(container)];
-  const [targetX, targetY] = [targetLeft - containerLeft, targetTop - containerTop].map(t => t + offset);
-  const [diffX, diffY] = [targetX - initialX, targetY - initialY];
+  const cumulativeOffsetContainer = cumulativeOffset(container);
+  const cumulativeOffsetTarget = element ? cumulativeOffset(element) : { top: y, left: x };
+
+  const initialX = scrollLeft(container);
+  const initialY = scrollTop(container);
+
+  const targetX = cumulativeOffsetTarget.left - cumulativeOffsetContainer.left + (offset as number);
+  const targetY = cumulativeOffsetTarget.top - cumulativeOffsetContainer.top + (offset as number);
+
+  const diffX = targetX - initialX;
+  const diffY = targetY - initialY;
 
   let scrolling = true;
   let started = false;
   const startTime = now() + delay;
   const endTime = startTime + duration;
 
-  function scrollToTopLeft(top: number, left: number): void {
-    if (scrollX) scrollLeft(container, left);
-    if (scrollY) scrollTop(container, top);
+  function scrollToTopLeft(element: HTMLElement, top: number, left: number): void {
+    if (scrollX) scrollLeft(element, left);
+    if (scrollY) scrollTop(element, top);
   }
 
   function start(delayStart: number | boolean): void {
@@ -60,7 +68,7 @@ const scrollToInternal = (options: ScrollToElementOptions): (() => void) => {
   }
 
   function tick(progress: number): void {
-    scrollToTopLeft(initialY + diffY * progress, initialX + diffX * progress);
+    scrollToTopLeft(container, initialY + diffY * progress, initialX + diffX * progress);
   }
 
   function stop(): void {
@@ -83,7 +91,8 @@ const scrollToInternal = (options: ScrollToElementOptions): (() => void) => {
       return false;
     }
     if (started) {
-      const t = easing((now - startTime) / duration);
+      const p = now - startTime;
+      const t = 0 + 1 * easing(p / duration);
       tick(t);
     }
 
@@ -91,6 +100,7 @@ const scrollToInternal = (options: ScrollToElementOptions): (() => void) => {
   });
 
   start(delay);
+
   tick(0);
 
   return stop;
@@ -129,16 +139,27 @@ const setGlobalOptions = (options: ScrollToElementOptions): void => {
 const scrollTo = (options: ScrollToElementOptions): (() => void) =>
   scrollToInternal(proceedOptions(options));
 
-const scrollToY = (y: number, options?: ScrollToElementOptions): (() => void) => {
+const scrollToBottom = (options?: ScrollToElementOptions): (() => void) => {
   options = proceedOptions(options);
-  return scrollToInternal(extend(options, { element: null, y }));
+
+  return scrollToInternal(
+    extend(options, {
+      element: null,
+      y: scrollContainerHeight(options.container)
+    })
+  );
 };
 
-const scrollToBottom = (options?: ScrollToElementOptions): (() => void) => 
-  scrollToY(scrollContainerHeight(proceedOptions(options).container), options);
+const scrollToTop = (options?: ScrollToElementOptions): (() => void) => {
+  options = proceedOptions(options);
 
-const scrollToTop = (options?: ScrollToElementOptions): (() => void) => 
-  scrollToY(0, options);
+  return scrollToInternal(
+    extend(options, {
+      element: null,
+      y: 0
+    })
+  );
+};
 
 const makeScrollToAction =
   (scrollToFunc: Function) => (node: Node, options: ScrollToElementOptions) => {

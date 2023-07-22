@@ -1,6 +1,3 @@
-# Forked
-Vael's fork of svelte-scrollto-element, supporting Svelte 4 and bringing with it slight optimizations.
-
 # svelte-scrollto-element
 
 > Animating vertical and horizontal scrolling (for Svelte)
