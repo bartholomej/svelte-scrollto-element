@@ -7,8 +7,7 @@ export const $ = (selector: HTMLElement): HTMLElement => {
   return selector;
 };
 
-export const extend = (...args: ScrollToElementOptions[]): ScrollToElementOptions =>
-  Object.assign({}, ...args);
+export const extend = (...args: ScrollToElementOptions[]): ScrollToElementOptions => Object.assign({}, ...args);
 
 export const cumulativeOffset = (element: HTMLElement | any): ScrollToElementPosition => {
   let top = 0;
@@ -26,8 +25,7 @@ export const cumulativeOffset = (element: HTMLElement | any): ScrollToElementPos
   };
 };
 
-export const directScroll = (element: HTMLElement | any): boolean =>
-  element && element !== document && element !== document.body;
+export const directScroll = (element: HTMLElement | any): boolean => element && element !== document && element !== document.body;
 
 export const scrollTop = (element: HTMLElement | any, value?: number): number => {
   const inSetter = value !== undefined;
@@ -48,3 +46,26 @@ export const scrollLeft = (element: HTMLElement, value?: number): number => {
     ? (document.documentElement.scrollLeft = document.body.scrollLeft = value)
     : window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
 };
+
+export const noop = () => {};
+
+// Custom animation loop
+export const startAnimationLoop = (callback: (time: number) => boolean): (() => void) => {
+  let running = true;
+
+  const loop = (time: number) => {
+    if (!running) return;
+    if (callback(time)) {
+      requestAnimationFrame(loop);
+    }
+  };
+
+  requestAnimationFrame(loop);
+
+  // Return function to stop the loop
+  return () => {
+    running = false;
+  };
+};
+
+export const now = () => performance.now();

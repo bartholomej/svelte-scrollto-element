@@ -1,8 +1,9 @@
+// animateScroll.ts
 import { cubicInOut } from 'svelte/easing';
-import { loop, noop, now } from 'svelte/internal';
-import { ScrollToElementOptions } from '../global.interface';
-import { $, cumulativeOffset, extend, scrollLeft, scrollTop } from '../helpers/helper.js';
+import { $, cumulativeOffset, extend, noop, scrollLeft, scrollTop, startAnimationLoop } from '../helpers/helper.js';
+import { ScrollToElementOptions } from './../global.interface.js';
 
+// Default options
 const defaultOptions: ScrollToElementOptions = {
   container: 'body',
   duration: 500,
@@ -16,26 +17,14 @@ const defaultOptions: ScrollToElementOptions = {
   scrollY: true
 };
 
+// Scroll to internal implementation
 const scrollToInternal = (options: ScrollToElementOptions): (() => void) => {
-  const {
-    duration,
-    delay,
-    easing,
-    x = 0,
-    y = 0,
-    scrollX,
-    scrollY,
-    onStart,
-    onDone,
-    container,
-    onAborting,
-    element
-  } = options;
+  const { duration, delay, easing, x = 0, y = 0, scrollX, scrollY, onStart, onDone, onAborting, container, element } = options;
 
   let { offset } = options;
 
   if (typeof offset === 'function') {
-    offset = offset() as Function;
+    offset = offset() as number;
   }
 
   const cumulativeOffsetContainer = cumulativeOffset(container);
@@ -52,32 +41,32 @@ const scrollToInternal = (options: ScrollToElementOptions): (() => void) => {
 
   let scrolling = true;
   let started = false;
-  const startTime = now() + delay;
+  const startTime = performance.now() + delay;
   const endTime = startTime + duration;
 
-  function scrollToTopLeft(element: HTMLElement, top: number, left: number): void {
-    if (scrollX) scrollLeft(element, left);
-    if (scrollY) scrollTop(element, top);
-  }
+  const scrollToTopLeft = (el: HTMLElement, top: number, left: number): void => {
+    if (scrollX) scrollLeft(el, left);
+    if (scrollY) scrollTop(el, top);
+  };
 
-  function start(delayStart: number | boolean): void {
-    if (!delayStart) {
+  const start = () => {
+    if (!started) {
       started = true;
       onStart(element, { x, y });
     }
-  }
+  };
 
-  function tick(progress: number): void {
+  const tick = (progress: number) => {
     scrollToTopLeft(container, initialY + diffY * progress, initialX + diffX * progress);
-  }
+  };
 
-  function stop(): void {
+  const stop = () => {
     scrolling = false;
-  }
+  };
 
-  loop((now): boolean => {
+  startAnimationLoop((now) => {
     if (!started && now >= startTime) {
-      start(false);
+      start();
     }
 
     if (started && now >= endTime) {
@@ -90,22 +79,22 @@ const scrollToInternal = (options: ScrollToElementOptions): (() => void) => {
       onAborting(element, { x, y });
       return false;
     }
+
     if (started) {
-      const p = now - startTime;
-      const t = 0 + 1 * easing(p / duration);
+      const p = (now - startTime) / duration;
+      const t = easing(p);
       tick(t);
     }
 
-    return true;
+    return scrolling;
   });
 
-  start(delay);
-
-  tick(0);
+  tick(0); // Initial tick
 
   return stop;
 };
 
+// Helper functions
 const proceedOptions = (options: ScrollToElementOptions): ScrollToElementOptions => {
   const opts = extend({}, defaultOptions, options);
   opts.container = $(opts.container);
@@ -115,71 +104,61 @@ const proceedOptions = (options: ScrollToElementOptions): ScrollToElementOptions
 
 const scrollContainerHeight = (containerElement: HTMLElement | Document): number => {
   if (containerElement && containerElement !== document && containerElement !== document.body) {
-    return (
-      (containerElement as HTMLElement).scrollHeight -
-      (containerElement as HTMLElement).offsetHeight
-    );
+    return (containerElement as HTMLElement).scrollHeight - (containerElement as HTMLElement).offsetHeight;
   }
   const { body } = document;
   const html = document.documentElement;
 
-  return Math.max(
-    body.scrollHeight,
-    body.offsetHeight,
-    html.clientHeight,
-    html.scrollHeight,
-    html.offsetHeight
-  );
+  return Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
 };
 
 const setGlobalOptions = (options: ScrollToElementOptions): void => {
   extend(defaultOptions, options || {});
 };
 
-const scrollTo = (options: ScrollToElementOptions): (() => void) =>
-  scrollToInternal(proceedOptions(options));
+// Scroll functions
+const scrollTo = (options: ScrollToElementOptions): (() => void) => scrollToInternal(proceedOptions(options));
 
 const scrollToBottom = (options?: ScrollToElementOptions): (() => void) => {
-  options = proceedOptions(options);
+  const opts = proceedOptions(options);
 
   return scrollToInternal(
-    extend(options, {
+    extend(opts, {
       element: null,
-      y: scrollContainerHeight(options.container)
+      y: scrollContainerHeight(opts.container)
     })
   );
 };
 
 const scrollToTop = (options?: ScrollToElementOptions): (() => void) => {
-  options = proceedOptions(options);
+  const opts = proceedOptions(options);
 
   return scrollToInternal(
-    extend(options, {
+    extend(opts, {
       element: null,
       y: 0
     })
   );
 };
 
-const makeScrollToAction =
-  (scrollToFunc: Function) => (node: Node, options: ScrollToElementOptions) => {
-    let current = options;
-    const handle: EventListenerOrEventListenerObject = (e: Event) => {
-      e.preventDefault();
-      scrollToFunc(typeof current === 'string' ? { element: current } : current);
-    };
-    node.addEventListener('click', handle);
-    node.addEventListener('touchstart', handle);
-    return {
-      update(options: ScrollToElementOptions): void {
-        current = options;
-      },
-      destroy(): void {
-        node.removeEventListener('click', handle);
-        node.removeEventListener('touchstart', handle);
-      }
-    };
+const makeScrollToAction = (scrollToFunc: Function) => (node: Node, options: ScrollToElementOptions) => {
+  let current = options;
+  const handle: EventListenerOrEventListenerObject = (e: Event) => {
+    e.preventDefault();
+    scrollToFunc(typeof current === 'string' ? { element: current } : current);
   };
+  node.addEventListener('click', handle);
+  node.addEventListener('touchstart', handle);
+  return {
+    update(options: ScrollToElementOptions): void {
+      current = options;
+    },
+    destroy(): void {
+      node.removeEventListener('click', handle);
+      node.removeEventListener('touchstart', handle);
+    }
+  };
+};
 
 // Actions
 export const scrollto = makeScrollToAction(scrollTo);
@@ -187,4 +166,9 @@ export const scrolltotop = makeScrollToAction(scrollToTop);
 export const scrolltobottom = makeScrollToAction(scrollToBottom);
 
 // Methods
-export const animateScroll = { scrollTo, scrollToTop, scrollToBottom, setGlobalOptions };
+export const animateScroll = {
+  scrollTo,
+  scrollToTop,
+  scrollToBottom,
+  setGlobalOptions
+};
