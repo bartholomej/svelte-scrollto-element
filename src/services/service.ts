@@ -159,10 +159,14 @@ const makeScrollToAction = (scrollToFunc: Function) => (node: Node, options: Scr
   };
 };
 
+const makeScrollToActionOptional = (scrollToFunc: Function) => (node: Node, options?: ScrollToElementOptions) => {
+  return makeScrollToAction(scrollToFunc)(node, options);
+};
+
 // Actions
 export const scrollto = makeScrollToAction(scrollTo);
-export const scrolltotop = makeScrollToAction(scrollToTop);
-export const scrolltobottom = makeScrollToAction(scrollToBottom);
+export const scrolltotop = makeScrollToActionOptional(scrollToTop);
+export const scrolltobottom = makeScrollToActionOptional(scrollToBottom);
 
 // Methods
 export const animateScroll = {
