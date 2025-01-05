@@ -19,7 +19,7 @@ const defaultOptions: ScrollToElementOptions = {
 
 // Scroll to internal implementation
 const scrollToInternal = (options: ScrollToElementOptions): (() => void) => {
-  const { duration, delay, easing, x = 0, y = 0, scrollX, scrollY, onStart, onDone, onAborting, container, element } = options;
+  const { duration, delay, easing, x = 0, y = 0, scrollX, scrollY, onStart, onDone, container, onAborting, element } = options;
 
   let { offset } = options;
 
@@ -44,7 +44,7 @@ const scrollToInternal = (options: ScrollToElementOptions): (() => void) => {
   const startTime = performance.now() + delay;
   const endTime = startTime + duration;
 
-  const scrollToTopLeft = (el: HTMLElement, top: number, left: number): void => {
+  const scrollToTopLeft = (el: HTMLElement | string, top: number, left: number): void => {
     if (scrollX) scrollLeft(el, left);
     if (scrollY) scrollTop(el, top);
   };
@@ -94,9 +94,8 @@ const scrollToInternal = (options: ScrollToElementOptions): (() => void) => {
   return stop;
 };
 
-// Helper functions
-const proceedOptions = (options: ScrollToElementOptions): ScrollToElementOptions => {
-  const opts = extend({}, defaultOptions, options);
+const proceedOptions = (options: ScrollToElementOptions | string): ScrollToElementOptions => {
+  const opts = extend({}, defaultOptions, options as ScrollToElementOptions);
   opts.container = $(opts.container);
   opts.element = $(opts.element);
   return opts;
@@ -150,8 +149,8 @@ const makeScrollToAction = (scrollToFunc: Function) => (node: Node, options: Scr
   node.addEventListener('click', handle);
   node.addEventListener('touchstart', handle);
   return {
-    update(options: ScrollToElementOptions): void {
-      current = options;
+    update(opts: ScrollToElementOptions): void {
+      current = opts;
     },
     destroy(): void {
       node.removeEventListener('click', handle);
